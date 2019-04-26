@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{manuscript}[2019/04/26 v0.1.1 the Future Family]
+\ProvidesClass{manuscript}[2019/04/26 v0.1.1a the Future Family]
 
 \def\manuscript@baseclass{extarticle}
 
@@ -423,6 +423,10 @@
   \nobreakspace\thmnumber{\textup{#2}}
   \thmnote{\sffamily\bfseries\color{black} (#3)}}
 
+\newtheoremstyle{styleremark}
+  {0pt}{0pt}{\itshape}{0pt}{}{}{0pt}
+  {\thmnote{\sffamily\bfseries\color{black} (#3)}}
+
 \theoremstyle{styledefinition}
 \newtheorem{envdefinition}{\definitiontitle}[section]
 \newtheorem*{envdefinition*}{\definitiontitle}
@@ -450,6 +454,9 @@
 \newtheorem*{envproblem*}{\problemtitle}
 \newtheorem{envexample}{\exampletitle}[section]
 \newtheorem*{envexample*}{\exampletitle}
+
+\theoremstyle{styleremark}
+\newtheorem*{envremark}{}
 
 %% Environments for theorems
 %--------------------------------------------------------------------------
@@ -494,7 +501,7 @@
                {\end{envproposition*}\end{boxproposition}}
 
 \newenvironment{conjecture}
-               {\begin{boxconjecture}\mparfig[0.1]{\questionmark[0.33]{purple}}
+               {\begin{boxconjecture}\mparfig[0.1]{\questionmark[0.3]{purple}}
                 \begin{envconjecture}}
                {\end{envconjecture}\end{boxconjecture}}
 
@@ -535,9 +542,9 @@
                {\end{envexample*}\end{boxexample}}
 
 \newenvironment{remark}
-               {\par\noindent\itshape
-                \mparfig{\ideabulb[0.33]{orange}}\hspace{-2.4ex}}%link this with font size!
-               {\vspace{0.5\baselineskip}\par}
+               {\mparfig{\ideabulb[0.3]{orange}}
+                \begin{envremark}}
+               {\end{envremark}\vspace{0.5\baselineskip}}
 
 \newenvironment{remark*}
                {\begin{remark}}
@@ -691,14 +698,14 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
     \fi
     \makeatother
 
-    \newcommand{\handwriting}{\color{gray}}
+    \newcommand{\handwriting}{\color{gray!66}}
     \renewcommand{\emph}[1]{{\color{\emcolor} \begin{CJK}{UTF8}{gkai}\em #1\end{CJK}}}
     \renewcommand{\textit}[1]{{\begin{CJK*}{UTF8}{gkai}\itshape #1\end{CJK*}}}
 
     \renewenvironment{remark}
-      {\par\vspace{0.3\baselineskip}\noindent\begin{CJK*}{UTF8}{gkai}\itshape
-      \mparfig{\ideabulb[0.33]{orange}}\!\!\!\!}
-      {\end{CJK*}\vspace{0.5\baselineskip}\par} %This should be linked with font size.
+      {\vspace{0.3\baselineskip}\mparfig{\ideabulb[0.3]{orange}}
+       \begin{envremark}\begin{CJK*}{UTF8}{gkai}}
+      {\end{CJK*}\end{envremark}\vspace{0.5\baselineskip}}
 
     \RequirePackage{silence}
     \WarningFilter{natbib}{Citation `}
@@ -712,6 +719,7 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
 
 \else
   \RequirePackage{indentfirst}
+  \renewcommand{\baselinestretch}{1.15}
 
   \newcommand\handwriting{\fontfamily{frc}\selectfont \bfseries \small}
 
