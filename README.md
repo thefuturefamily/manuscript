@@ -23,7 +23,7 @@
 ### 中文文档示例
 ```
 %! TEX program = xelatex
-\documentclass[9pt,twoside,mpar]{manuscript}
+\documentclass[9pt,twoside,mpar,cn]{manuscript}
 
 \begin{document}
 
