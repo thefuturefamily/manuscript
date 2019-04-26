@@ -1,5 +1,5 @@
 #  **manuscript**
-`manuscript` 是为撰写数学笔记而设计的$\LaTeX$模版类. 它支持英文、中文，并且同时支持 `pdfLaTeX` 与 `XeLaTeX`引擎.
+`manuscript` 是为撰写数学笔记而设计的 LaTeX 模版类. 它支持英文、中文，并且同时支持 `pdfLaTeX` 与 `XeLaTeX`引擎.
 
 ## **主要功能**
 - 它继承自`extarticle`模版类，因而可以使用`extarticle`支持的参数，包括字号、打印方式等.
@@ -16,9 +16,9 @@
 - 模块
 ![module](https://github.com/thefuturefamily/manuscript/raw/master/images/module.png)
 
-$\blacktriangleright$ **更具体的说明可以参见示例与说明文档.**
+**▶️更具体的说明可以参见示例与说明文档.**
 
-## **$\TeX$ 文档样例**
+## **TeX 文档样例**
 
 ### 中文文档示例
 ```
