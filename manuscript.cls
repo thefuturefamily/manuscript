@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{manuscript}[2019/4/19 v0.1 the Future Family]
+\ProvidesClass{manuscript}[2019/04/26 v0.1.1 the Future Family]
 
 \def\manuscript@baseclass{extarticle}
 
@@ -358,7 +358,7 @@
     \setlength{\global\defsep}{\deftop-\defbot}
     \setlength{\global\currentpage}{\thepage pt}
     \ifthenelse{\lengthtest{\defpage = \currentpage}}
-      {\ifthenelse{\lengthtest{\defsep < 3mm}}{\vspace{-3mm}}{}}{}
+      {\ifthenelse{\lengthtest{\defsep < 3mm}}{\vspace{-3mm}}{}}{}\par
     \begin{tcolorbox}
     [enhanced jigsaw,pad at break*=1mm,breakable,
     colback=lightorange!10!white,boxrule=0pt,frame hidden,
@@ -400,25 +400,25 @@
 %--------------------------------------------------------------------------
 \RequirePackage{amsthm}
 \newtheoremstyle{styletheorem}
-  {0pt}{0pt}{\normalfont}{0pt}{\small\bf\sffamily\color{orange}}{\;}{0.25em}
+  {0pt}{0pt}{\theoremfont}{0pt}{\small\bf\sffamily\color{orange}}{\;}{0.25em}
   {\small\sffamily\color{orange}\thmname{#1}\!\!
   \nobreakspace\thmnumber{\textup{#2}}
   \thmnote{\sffamily\bfseries\color{black} (#3)}}
 
 \newtheoremstyle{styleconjecture}
-  {0pt}{0pt}{\normalfont}{0pt}{\small\bf\sffamily\color{purple}}{\;}{0.25em}
+  {0pt}{0pt}{\theoremfont}{0pt}{\small\bf\sffamily\color{purple}}{\;}{0.25em}
   {\small\sffamily\color{purple}\thmname{#1}\!\!
   \nobreakspace\thmnumber{\textup{#2}}
   \thmnote{\sffamily\bfseries\color{purple} (#3)}}
 
 \newtheoremstyle{styledefinition}
-  {0pt}{0pt}{\normalfont}{0pt}{\small\bf\sffamily\color{black}}{\;}{0.25em}
+  {0pt}{0pt}{\theoremfont}{0pt}{\small\bf\sffamily\color{black}}{\;}{0.25em}
   {\small\sffamily\color{forestgreen}\thmname{#1}\!\!
   \nobreakspace\thmnumber{\textup{#2}}
   \thmnote{\sffamily\bfseries\color{black} (#3)}}
 
 \newtheoremstyle{styleexercise}
-  {0pt}{0pt}{\normalfont}{0pt}{\small\bf\sffamily\color{black}}{\;}{0.25em}
+  {0pt}{0pt}{\theoremfont}{0pt}{\small\bf\sffamily\color{black}}{\;}{0.25em}
   {\small\sffamily\color{black}\thmname{#1}\!\!
   \nobreakspace\thmnumber{\textup{#2}}
   \thmnote{\sffamily\bfseries\color{black} (#3)}}
@@ -573,6 +573,8 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
 \colorem{skyblue}
 
 \newcommand\enhandwriting{\fontfamily{frc}\selectfont \bfseries \tiny}
+\newcommand\theoremfont{\normalfont}
+\newcommand\settheoremfont[1]{\renewcommand\theoremfont{#1}}
 
 \ifcn
   \RequirePackage{indentfirst}
@@ -590,12 +592,12 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
     \RequirePackage{frcursive}
 
     \ifwindows
-      \setCJKmainfont[ItalicFont={KaiTi}]{DengXian}
+      \setCJKmainfont[ItalicFont={STKaiti}]{DengXian}
+      \newCJKfontfamily\handwriting{FZShuTi}
     \else
       \setCJKmainfont[BoldFont={STHeiti},ItalicFont={STKaiti}]{STXihei}
+      \newCJKfontfamily\handwriting{HanziPenSC-W5}
     \fi
-
-    \newCJKfontfamily\handwriting{HanziPenSC-W5}
 
     \makeatletter
     \def\pgfsys@hboxsynced#1{% fix marginnote position
