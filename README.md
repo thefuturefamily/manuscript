@@ -7,14 +7,14 @@
     - 使用`oneside`、`twoside`来调整是单面文档或双面文档.
     - 使用`gray`来生成灰度文档.
 
-- 你可以生成漂亮的定理样式
-![theorem](https://github.com/thefuturefamily/manuscript/raw/master/images/theorems.png)
+- 你可以生成漂亮的定理样式  
+<img src="https://github.com/thefuturefamily/manuscript/raw/master/images/theorems.png" width=66% alt="theorem"/>
 
-- 页边注
-![marginpar](https://github.com/thefuturefamily/manuscript/raw/master/images/marginpar.png)
+- 页边注  
+<img src="https://github.com/thefuturefamily/manuscript/raw/master/images/marginpar.png" width=66% alt="marginpar"/>
 
-- 模块
-![module](https://github.com/thefuturefamily/manuscript/raw/master/images/module.png)
+- 模块  
+<img src="https://github.com/thefuturefamily/manuscript/raw/master/images/module.png" width=66% alt="module"/>
 
 **▶️更具体的说明可以参见示例与说明文档.**
 
