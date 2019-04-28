@@ -8,7 +8,8 @@
     - 使用`gray`来生成灰度文档.
 
 - 你可以生成漂亮的定理样式  
-<img src="https://github.com/thefuturefamily/manuscript/raw/master/images/theorems.png" width=66% alt="theorem"/>
+<img src="https://github.com/thefuturefamily/manuscript/raw/master/images/theorems.png" width=66% alt="theorem"/>  
+    - 如果希望使用传统的定理样式，可以添加参数`classical`.
 
 - 页边注  
 <img src="https://github.com/thefuturefamily/manuscript/raw/master/images/marginpar.png" width=66% alt="marginpar"/>
