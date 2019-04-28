@@ -1,10 +1,13 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{manuscript}[2019/04/26 v0.1.1a the Future Family]
+\ProvidesClass{manuscript}[2019/04/28 v0.1.2 the Future Family]
 
 \def\manuscript@baseclass{extarticle}
 
 \newif\ifusempar\usemparfalse
 \DeclareOption{mpar}{\usempartrue}
+
+\newif\ifclassical\classicalfalse
+\DeclareOption{classical}{\classicaltrue}
 
 \newif\ifcn\cnfalse
 \DeclareOption{cn}{\cntrue}
@@ -452,6 +455,8 @@
 \newtheorem*{envexercise*}{\exercisetitle}
 \newtheorem{envproblem}{\problemtitle}[section]
 \newtheorem*{envproblem*}{\problemtitle}
+\newtheorem{envquestion}[envproblem]{\questiontitle}
+\newtheorem*{envquestion*}{\questiontitle}
 \newtheorem{envexample}{\exampletitle}[section]
 \newtheorem*{envexample*}{\exampletitle}
 
@@ -460,95 +465,132 @@
 
 %% Environments for theorems
 %--------------------------------------------------------------------------
-\newenvironment{definition}
-               {\begin{boxdefinition}\begin{envdefinition}}
-               {\end{envdefinition}\end{boxdefinition}}
+\ifclassical
+  \theoremstyle{plain}
+  \newtheorem{theorem}{\theoremtitle}[section]
+  \newtheorem*{theorem*}{\theoremtitle}
+  \newtheorem{definition}[theorem]{\definitiontitle}
+  \newtheorem*{definition*}{\definitiontitle}
+  \newtheorem{corollary}[theorem]{\corollarytitle} 
+  \newtheorem*{corollary*}{\corollarytitle}
+  \newtheorem{lemma}[theorem]{\lemmatitle}
+  \newtheorem*{lemma*}{\lemmatitle}
+  \newtheorem{proposition}[theorem]{\propositiontitle}
+  \newtheorem*{proposition*}{\propositiontitle}
+  \newtheorem{fact}[theorem]{\facttitle}
+  \newtheorem*{fact*}{\facttitle}
+  \newtheorem{conjecture}{\conjecturetitle}
+  \newtheorem*{conjecture*}{\conjecturetitle}
+  \newtheorem{exercise}{\exercisetitle}[section]
+  \newtheorem*{exercise*}{\exercisetitle}
+  \newtheorem{problem}{\problemtitle}
+  \newtheorem*{problem*}{\problemtitle}
+  \newtheorem{question}[problem]{\questiontitle}
+  \newtheorem*{question*}{\questiontitle}
+  \newtheorem{example}{\exampletitle}
+  \newtheorem*{example*}{\exampletitle}
+  \newtheorem{remark}{\remarktitle}
+  \newtheorem*{remark*}{\remarktitle}
 
-\newenvironment{definition*}
-               {\begin{boxdefinition}\begin{envdefinition*}}
-               {\end{envdefinition*}\end{boxdefinition}}
+\else
+  \newenvironment{definition}
+                {\begin{boxdefinition}\begin{envdefinition}}
+                {\end{envdefinition}\end{boxdefinition}}
 
-\newenvironment{theorem}
-               {\begin{boxtheorem}\begin{envtheorem}}
-               {\end{envtheorem}\end{boxtheorem}}
+  \newenvironment{definition*}
+                {\begin{boxdefinition}\begin{envdefinition*}}
+                {\end{envdefinition*}\end{boxdefinition}}
 
-\newenvironment{theorem*}
-               {\begin{boxtheorem}\begin{envtheorem*}}
-               {\end{envtheorem*}\end{boxtheorem}}
+  \newenvironment{theorem}
+                {\begin{boxtheorem}\begin{envtheorem}}
+                {\end{envtheorem}\end{boxtheorem}}
 
-\newenvironment{corollary}
-               {\begin{boxcorollary}\begin{envcorollary}}
-               {\end{envcorollary}\end{boxcorollary}}
+  \newenvironment{theorem*}
+                {\begin{boxtheorem}\begin{envtheorem*}}
+                {\end{envtheorem*}\end{boxtheorem}}
 
-\newenvironment{corollary*}
-               {\begin{boxcorollary}\begin{envcorollary*}}
-               {\end{envcorollary*}\end{boxcorollary}}
+  \newenvironment{corollary}
+                {\begin{boxcorollary}\begin{envcorollary}}
+                {\end{envcorollary}\end{boxcorollary}}
 
-\newenvironment{lemma}
-               {\begin{boxlemma}\begin{envlemma}}
-               {\end{envlemma}\end{boxlemma}}
+  \newenvironment{corollary*}
+                {\begin{boxcorollary}\begin{envcorollary*}}
+                {\end{envcorollary*}\end{boxcorollary}}
 
-\newenvironment{lemma*}
-               {\begin{boxlemma}\begin{envlemma*}}
-               {\end{envlemma*}\end{boxlemma}}
+  \newenvironment{lemma}
+                {\begin{boxlemma}\begin{envlemma}}
+                {\end{envlemma}\end{boxlemma}}
 
-\newenvironment{proposition}
-               {\begin{boxproposition}\begin{envproposition}}
-               {\end{envproposition}\end{boxproposition}}
+  \newenvironment{lemma*}
+                {\begin{boxlemma}\begin{envlemma*}}
+                {\end{envlemma*}\end{boxlemma}}
 
-\newenvironment{proposition*}
-               {\begin{boxproposition}\begin{envproposition*}}
-               {\end{envproposition*}\end{boxproposition}}
+  \newenvironment{proposition}
+                {\begin{boxproposition}\begin{envproposition}}
+                {\end{envproposition}\end{boxproposition}}
 
-\newenvironment{conjecture}
-               {\begin{boxconjecture}\mparfig[0.1]{\questionmark[0.3]{purple}}
-                \begin{envconjecture}}
-               {\end{envconjecture}\end{boxconjecture}}
+  \newenvironment{proposition*}
+                {\begin{boxproposition}\begin{envproposition*}}
+                {\end{envproposition*}\end{boxproposition}}
 
-\newenvironment{conjecture*}
-               {\begin{boxconjecture}\begin{envconjecture*}}
-               {\end{envconjecture*}\end{boxconjecture}}
+  \newenvironment{conjecture}
+                {\begin{boxconjecture}\mparfig[0.1]{\questionmark[0.3]{purple}}
+                  \begin{envconjecture}}
+                {\end{envconjecture}\end{boxconjecture}}
 
-\newenvironment{fact}
-               {\begin{boxfact}\begin{envfact}}
-               {\end{envfact}\end{boxfact}}
+  \newenvironment{conjecture*}
+                {\begin{boxconjecture}\begin{envconjecture*}}
+                {\end{envconjecture*}\end{boxconjecture}}
 
-\newenvironment{fact*}
-               {\begin{boxfact}\begin{envfact*}}
-               {\end{envfact*}\end{boxfact}}
+  \newenvironment{fact}
+                {\begin{boxfact}\begin{envfact}}
+                {\end{envfact}\end{boxfact}}
 
-\newenvironment{exercise}
-               {\begin{boxexercise}\begin{envexercise}}
-               {\end{envexercise}\end{boxexercise}}
+  \newenvironment{fact*}
+                {\begin{boxfact}\begin{envfact*}}
+                {\end{envfact*}\end{boxfact}}
 
-\newenvironment{exercise*}
-               {\begin{boxexercise}\begin{envexercise*}}
-               {\end{envexercise*}\end{boxexercise}}
+  \newenvironment{exercise}
+                {\begin{boxexercise}\begin{envexercise}}
+                {\end{envexercise}\end{boxexercise}}
 
-\newenvironment{problem}
-               {\begin{boxproblem}\begin{envproblem}}
-               {\end{envproblem}\end{boxproblem}}
+  \newenvironment{exercise*}
+                {\begin{boxexercise}\begin{envexercise*}}
+                {\end{envexercise*}\end{boxexercise}}
 
-\newenvironment{problem*}
-               {\begin{boxproblem}\begin{envproblem*}}
-               {\end{envproblem*}\end{boxproblem}}
+  \newenvironment{problem}
+                {\begin{boxproblem}\begin{envproblem}}
+                {\end{envproblem}\end{boxproblem}}
 
-\newenvironment{example}
-               {\begin{boxexample}\begin{envexample}}
-               {\end{envexample}\end{boxexample}}
+  \newenvironment{problem*}
+                {\begin{boxproblem}\begin{envproblem*}}
+                {\end{envproblem*}\end{boxproblem}}
 
-\newenvironment{example*}
-               {\begin{boxexample}\begin{envexample*}}
-               {\end{envexample*}\end{boxexample}}
+  \newenvironment{question}
+                {\begin{boxproblem}\begin{envquestion}}
+                {\end{envquestion}\end{boxproblem}}
 
-\newenvironment{remark}
-               {\mparfig{\ideabulb[0.3]{orange}}
-                \begin{envremark}}
-               {\end{envremark}\vspace{0.5\baselineskip}}
+  \newenvironment{question*}
+                {\begin{boxproblem}\begin{envquestion*}}
+                {\end{envquestion*}\end{boxproblem}}
 
-\newenvironment{remark*}
-               {\begin{remark}}
-               {\end{remark}}
+  \newenvironment{example}
+                {\begin{boxexample}\begin{envexample}}
+                {\end{envexample}\end{boxexample}}
+
+  \newenvironment{example*}
+                {\begin{boxexample}\begin{envexample*}}
+                {\end{envexample*}\end{boxexample}}
+
+  \newenvironment{remark}
+                {\mparfig{\ideabulb[0.3]{orange}}
+                  \begin{envremark}}
+                {\end{envremark}\vspace{0.5\baselineskip}}
+
+  \newenvironment{remark*}
+                {\begin{remark}}
+                {\end{remark}}
+\fi
 
 %% Section title format
 %--------------------------------------------------------------------------
@@ -648,6 +690,7 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
     \def\problemtitle{问题}
     \def\questiontitle{小问题}
     \def\exercisetitle{练习}
+    \def\remarktitle{备注}
     \renewcommand\refname{参考文献}
     \renewcommand\bibname{参考文献}
 
@@ -676,6 +719,7 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
       \def\problemtitle{问题}
       \def\questiontitle{小问题}
       \def\exercisetitle{练习}
+      \def\remarktitle{备注}
       \renewcommand\proofname{\textit{证明}}
       \renewcommand\refname{参考文献}
       \renewcommand\bibname{参考文献}
@@ -702,10 +746,12 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
     \renewcommand{\emph}[1]{{\color{\emcolor} \begin{CJK}{UTF8}{gkai}\em #1\end{CJK}}}
     \renewcommand{\textit}[1]{{\begin{CJK*}{UTF8}{gkai}\itshape #1\end{CJK*}}}
 
+    \ifclassical\else
     \renewenvironment{remark}
       {\vspace{0.3\baselineskip}\mparfig{\ideabulb[0.3]{orange}}
        \begin{envremark}\begin{CJK*}{UTF8}{gkai}}
       {\end{CJK*}\end{envremark}\vspace{0.5\baselineskip}}
+    \fi
 
     \RequirePackage{silence}
     \WarningFilter{natbib}{Citation `}
@@ -735,13 +781,14 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
   \def\problemtitle{Problem}
   \def\questiontitle{Question}
   \def\exercisetitle{Exercise}
+  \def\remarktitle{Remark}
   \def\emailaddr{Email address: }
 
-  \newcommand\mparliftupfactor{1.4}  %This should be linked with font size.
+  \newcommand\mparliftupfactor{1.4} %This should be linked with font size.
   \newcommand\seplineshrink{0.1} %This should be linked with font size.
 
   \newcommand\highlight[1]{\bgroup\markoverwith
-  {\textcolor{#1}{\rule[-.5ex]{2pt}{2.5ex}}}\ULon}
+  {\textcolor{#1}{\rule[-.5ex]{2pt}{2.5ex}}}\ULon} %This should be linked with font size.
 
   \let\emph\relax
   \DeclareTextFontCommand{\emph}{\color{\emcolor}\em}
