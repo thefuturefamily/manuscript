@@ -1,10 +1,13 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{manuscript}[2019/4/19 v0.1 the Future Family]
+\ProvidesClass{manuscript}[2019/05/19 v0.1.5 the Future Family]
 
 \def\manuscript@baseclass{extarticle}
 
-\newif\ifusempar\usemparfalse
-\DeclareOption{mpar}{\usempartrue}
+\newif\if@usempar\@usemparfalse
+\DeclareOption{mpar}{\@usempartrue}
+
+\newif\ifclassical\classicalfalse
+\DeclareOption{classical}{\classicaltrue}
 
 \newif\ifcn\cnfalse
 \DeclareOption{cn}{\cntrue}
@@ -26,12 +29,16 @@
 
 %% Geometry
 %--------------------------------------------------------------------------
-\RequirePackage{geometry} 
-\ifusempar
+\RequirePackage{geometry}
+\if@usempar
   \geometry{top=1in,bottom=1in,outer=2in,inner=1in,marginparwidth=1.5in,marginparsep=0.2in}
 \else
   \geometry{top=1in,bottom=1in,outer=1in,inner=1in,marginparwidth=0.7in,marginparsep=0.2in}
 \fi
+
+% Fonts
+%--------------------------------------------------------------------------
+\RequirePackage{kpfonts}
 
 %% Colors
 %--------------------------------------------------------------------------
@@ -47,6 +54,25 @@
 \definecolor{steelblue}{RGB}{70,130,180}
 \definecolor{forestgreen}{RGB}{21,122,81}
 \definecolor{lightorange}{RGB}{255,185,88}
+
+%% Lengths
+%--------------------------------------------------------------------------
+\RequirePackage{calc}
+\RequirePackage[nomessages]{fp}
+
+\newlength{\fsizept}
+\setlength{\fsizept}{\f@size pt}
+
+\newlength{\fsizeline}
+\setlength{\fsizeline}{\f@size\baselineskip}
+
+\newlength{\titleruleheight}
+\setlength{\titleruleheight}{0.075\fsizept}
+
+\newlength{\charskip}
+\setlength{\charskip}{\widthof{i}}
+
+\FPeval{\mparfigsize}{0.033*\f@size+0.03}
 
 %% Useful packages
 %--------------------------------------------------------------------------
@@ -72,7 +98,7 @@
   breaklines=true,
   frame=L,
   basicstyle=\small\ttfamily,
-  escapeinside={\#}{\#}
+  %escapeinside={\#}{\#}
 }
 
 \RequirePackage[normalem]{ulem}
@@ -81,7 +107,6 @@
 \graphicspath{{images/}}
 \RequirePackage{float}
 \RequirePackage{tikz}
-\RequirePackage{calc}
 
 \RequirePackage{booktabs}
 \RequirePackage{multirow}
@@ -91,6 +116,9 @@
 \strictpagecheck
 
 \RequirePackage{bxtexlogo}
+\RequirePackage{blindtext}
+
+\RequirePackage{silence}
 
 %% Maths
 %--------------------------------------------------------------------------
@@ -129,10 +157,10 @@
 \makeatletter
 \if@twoside
   \fancyfoot[LE,RO]{\bfseries \itshape -\,\thepage\,-}
-  \fancyhead[LE,RO]{\bfseries \nouppercase{\rightmark}} 
+  \fancyhead[LE,RO]{\bfseries \nouppercase{\rightmark}}
 \else
   \fancyfoot[R]{\bfseries \itshape -\,\thepage\,-}
-  \fancyhead[R]{\bfseries \nouppercase{\rightmark}} 
+  \fancyhead[R]{\bfseries \nouppercase{\rightmark}}
 \fi
 \makeatother
 
@@ -150,9 +178,27 @@
 }
 \makeatother
 
+%% Section title format
+%--------------------------------------------------------------------------
+\ifclassical
+  \titleformat{\section}{\ifcentertitle\center\fi\large\bfseries}{\thesection.}{.5em}{}
+\else
+  \titleformat{\section}{\ifcentertitle\center\fi\ifcn\large\bfseries\else\Large\sffamily\fi\color{steelblue}}{\thesection}{1em}{}[{\titlerule[\titleruleheight]}]
+\fi
+\titleformat{\subsection}{\ifcentertitle\center\fi\normalsize\bfseries}{\thesubsection.}{.5em}{}
+\titleformat{\subsubsection}{\ifcentertitle\center\fi\normalsize\bfseries}{\thesubsubsection}{.5em}{}
+
+%% Enumerate numbering format
+%--------------------------------------------------------------------------
+\setlist[enumerate,1]{label=(\arabic*),font=\textup,
+leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
+\setlist[enumerate,2]{label=(\alph*),font=\textup,leftmargin=7mm,labelsep=1.5mm,topsep=-0.8mm,itemsep=-0.8mm}
+
 %% Bibliography
 %--------------------------------------------------------------------------
+\usepackage[nil]{babel}
 \RequirePackage[square,comma,sort&compress,numbers]{natbib}
+\bibliographystyle{abbrvnat}
 \setlength{\bibsep}{1pt}
 \renewcommand{\bibfont}{\small}
 
@@ -206,64 +252,95 @@
 \if@twoside
   \tcbset{marginnotestyle/.style={% 
     skin=enhancedmiddle jigsaw,breakable,
-    boxrule=0mm,if odd page={leftrule=1mm,rightrule=0.01mm,left=1mm,right=1mm}{leftrule=0.01mm,rightrule=1mm,left=0mm,right=1mm},boxsep=0mm,top=1mm,bottom=1mm}}
+    boxrule=0mm,if odd page={leftrule=1mm,rightrule=-0.01mm,left=1mm,right=1mm}{leftrule=0.01mm,rightrule=1mm,left=0mm,right=1mm},boxsep=0mm,top=1mm,bottom=1mm}}
 \else
   \tcbset{marginnotestyle/.style={% 
     skin=enhancedmiddle jigsaw,breakable,
-    boxrule=0mm,leftrule=1mm,rightrule=0.01mm,left=1mm,right=1mm,boxsep=0mm,top=1mm,bottom=1mm}}
+    boxrule=0mm,leftrule=1mm,rightrule=-0.01mm,left=1mm,right=1mm,boxsep=0mm,top=1mm,bottom=1mm}}
 \fi
 \makeatother
-
-\newtcolorbox{skyblue}{marginnotestyle,colback=skyblue!5!white,colframe=skyblue!80}
-\newtcolorbox{hand}{marginnotestyle,colback=hand!3!white,colframe=hand!80}
-\newtcolorbox{handformal}{marginnotestyle,colback=handformal!3!white,colframe=handformal!75!yellow}
 
 % mpar
 \newcounter{mparcnt}
 \renewcommand\themparcnt{\small{$^{\color{skyblue}{\mathbf{\arabic{mparcnt}}}}$}}
-\newcommand\mpar[2][0]{
-  \refstepcounter{mparcnt}{\hspace{-0.8ex}$^{\color{skyblue}{\mathbf{\arabic{mparcnt}}}}$}% 
-  \mparadjust{#1\baselineskip}%  %This should be linked with font size.
-  \marginnote{\vskip-\mparliftupfactor\baselineskip\begin{skyblue}% 
+\newcommand\mpar[2][0]{\mbox{
+  \refstepcounter{mparcnt}{\hspace{-0.8\charskip}$^{\color{skyblue}{\mathbf{\arabic{mparcnt}}}}$}% 
+  \mparadjust{#1\baselineskip}%
+  \marginnote{\vskip-\mparliftupfactor\baselineskip%
+  \begin{tcolorbox}% 
+    [marginnotestyle,colback=skyblue!5!white,colframe=skyblue!80]%
     \linespread{0.0}\themparcnt
-    \scriptsize\color{skyblue!70!black} #2
-  \end{skyblue}}}
+    \scriptsize\color{skyblue!70!black}\normalfont #2%
+  \end{tcolorbox}}}}
 
 % mparhand
 \newcommand\mparhand[2][0]{% 
   {\mparadjust{#1\baselineskip}% 
-  \marginnote{\vskip-\mparliftupfactor\baselineskip\begin{hand}% 
+  \marginnote{\vskip-\mparliftupfactor\baselineskip%
+  \begin{tcolorbox}
+    [marginnotestyle,colback=hand!3!white,colframe=hand!80]% 
     \linespread{0.0}% 
     \handwriting\scriptsize\color{hand!70!black} #2% 
-  \end{hand}}}}
+  \end{tcolorbox}}}}
 
 % mparhandnum
 \newcounter{mparhandformal}
 \renewcommand\themparhandformal{\small{$^{\color{handformal}\mathbf{\roman{mparhandformal}}}$}}
-\newcommand\mparhandnum[2][0]{
-  \refstepcounter{mparhandformal}{\hspace{-0.8ex}$^{\color{handformal}{\mathbf{\roman{mparhandformal}}}}$}%  %This should be linked with font size.
-  \mparadjust{#1\baselineskip}% 
-  \marginnote{\vskip-\mparliftupfactor\baselineskip\begin{handformal}% 
+\newcommand\mparhandnum[2][0]{\mbox{%
+  \refstepcounter{mparhandformal}{\hspace{0.4\charskip}$^{\color{handformal}{\mathbf{\roman{mparhandformal}}}}$}%
+  \mparadjust{#1\baselineskip}%
+  \marginnote{\vskip-\mparliftupfactor\baselineskip%
+  \begin{tcolorbox}%
+    [marginnotestyle,colback=handformal!3!white,colframe=handformal!75!yellow]% 
     \linespread{0.0}\themparhandformal
-    \handwriting\scriptsize\color{handformal!70!black} #2
-  \end{handformal}}}
+    \handwriting\scriptsize\color{handformal!70!black} #2%
+  \end{tcolorbox}}}}
 
 % marginal figure
 \newlength{\fixfactor}
-\newlength{\temp}
+\newlength{\tmp}
 \makeatletter
-  \setlength{\fixfactor}{\f@size\baselineskip} %This should be linked with font size.
-  \setlength{\temp}{0.1\fixfactor}
-  \addtolength{\temp}{-1.2\baselineskip}
-  \setlength{\fixfactor}{\temp}
+  \setlength{\fixfactor}{0.1\fsizeline-1.2\baselineskip}
 
-\newcommand\mparfig[2][0]{
+\newcommand\mparfig[2][0]{\par
   \if@twoside\else\reversemarginpar\fi
-  \setlength{\temp}{#1\baselineskip+\fixfactor}\mparadjust{\temp}
+  \setlength{\tmp}{#1\baselineskip+\fixfactor}\mparadjust{\tmp}
   \marginnote{\!\!\!\!\!\!#2\!\!\!\!}\vspace{0pt} %This should be linked with font size.
   \if@twoside\else\normalmarginpar\fi
   }
 \makeatother
+
+\ifxetex % fix marginnote position
+  \makeatletter
+    \def\pgfsys@hboxsynced#1{%
+    {%
+      \pgfsys@beginscope%
+      \setbox\pgf@hbox=\hbox{%
+        \hskip\pgf@pt@x%
+        \raise\pgf@pt@y\hbox{%
+          \pgf@pt@x=0pt%
+          \pgf@pt@y=0pt%
+          \special{pdf: content q}%
+          \pgflowlevelsynccm% 
+          \pgfsys@invoke{q -1 0 0 -1 0 0 cm}%
+          \special{pdf: content -1 0 0 -1 0 0 cm q}% translate to original coordinate system
+          \pgfsys@invoke{0 J [] 0 d}% reset line cap and dash
+          \wd#1=0pt%
+          \ht#1=0pt%
+          \dp#1=0pt%
+          \box#1%
+          \pgfsys@invoke{n Q Q Q}%
+        }%
+        \hss%
+      }%
+      \wd\pgf@hbox=0pt%
+      \ht\pgf@hbox=0pt%
+      \dp\pgf@hbox=0pt%
+      \pgfsys@hbox\pgf@hbox%
+      \pgfsys@endscope%
+    }}
+  \makeatother
+\else\fi
 
 %% Module, Separation line
 %--------------------------------------------------------------------------
@@ -281,12 +358,12 @@
     \raggedright\hspace{-10ex}\arabic{section}.\ifthenelse{\equal{\arabic{subsection}}{0}}{}{\arabic{subsection}.}\alph{module} %This should be linked with font size.
   \else
     \raggedleft\arabic{section}.\ifthenelse{\equal{\arabic{subsection}}{0}}{}{\arabic{subsection}.}\alph{module}\hspace{-11ex} %This should be linked with font size.
-  \fi \vspace{-1ex}\end{sltop}\vspace{-1\baselineskip}} %This should be linked with font size.
+  \fi \vspace{-1ex}\end{sltop}\vspace{-1\baselineskip}}
 \else
-  \def\seplinetop{\vspace{-\seplineshrink\baselineskip}\begin{sltop}\stepcounter{module}\scriptsize\color{module!90!black!80} \raggedright\hspace{-10ex}\arabic{section}.\ifthenelse{\equal{\arabic{subsection}}{0}}{}{\arabic{subsection}.}\alph{module} \vspace{-1ex}\end{sltop}\vspace{-0.5\baselineskip}} %This should be linked with font size.
+  \def\seplinetop{\vspace{-\seplineshrink\baselineskip}\begin{sltop}\stepcounter{module}\scriptsize\color{module!90!black!80} \raggedright\hspace{-10ex}\arabic{section}.\ifthenelse{\equal{\arabic{subsection}}{0}}{}{\arabic{subsection}.}\alph{module}\vspace{-1ex}\end{sltop}\vspace{-0.5\baselineskip}} %This should be linked with font size.
 \fi
 \makeatother
-\def\seplinebottom{\vspace{-0.8\baselineskip}\begin{slbottom} \end{slbottom}\vspace{-\seplineshrink\baselineskip}} %This should be linked with font size.
+\def\seplinebottom{\vspace{-0.8\baselineskip}\begin{slbottom}\end{slbottom}\vspace{-\seplineshrink\baselineskip}} %This should be linked with font size.
 
 \newenvironment{module}{\seplinetop}{\seplinebottom}
 
@@ -297,8 +374,8 @@
 \newtcolorbox{subsltop}{subsepline,skin=emptyfirst,toprule=0.2mm,bottomrule=0mm}
 \newtcolorbox{subslbottom}{subsepline,skin=emptylast,toprule=0mm,bottomrule=0.2mm}
 
-\def\subseplinetop{\vspace{-\seplineshrink\baselineskip}\begin{subsltop}\end{subsltop}\vspace{-0.9\baselineskip}}
-\def\subseplinebottom{\vspace{-1\baselineskip}\begin{subslbottom}\end{subslbottom}\vspace{-\seplineshrink\baselineskip}}
+\def\subseplinetop{\vspace{-0.4\baselineskip}\vspace{-\seplineshrink\baselineskip}\begin{subsltop}\end{subsltop}\vspace{-0.75\baselineskip}} %This should be linked with font size.
+\def\subseplinebottom{\vspace{-1\baselineskip}\begin{subslbottom}\end{subslbottom}\vspace{-\seplineshrink\baselineskip}} %This should be linked with font size.
 
 \newenvironment{submodule}{\subseplinetop}{\subseplinebottom}
 
@@ -340,7 +417,6 @@
   colback=black!3,colframe=orange]}
   {\end{tcolorbox}}
 
-
 \ifdefined\pdfsavepos
   \RequirePackage{zref-savepos}
 
@@ -358,7 +434,7 @@
     \setlength{\global\defsep}{\deftop-\defbot}
     \setlength{\global\currentpage}{\thepage pt}
     \ifthenelse{\lengthtest{\defpage = \currentpage}}
-      {\ifthenelse{\lengthtest{\defsep < 3mm}}{\vspace{-3mm}}{}}{}
+      {\ifthenelse{\lengthtest{\defsep < 3mm}}{\vspace{-3mm}}{}}{}\par
     \begin{tcolorbox}
     [enhanced jigsaw,pad at break*=1mm,breakable,
     colback=lightorange!10!white,boxrule=0pt,frame hidden,
@@ -400,28 +476,32 @@
 %--------------------------------------------------------------------------
 \RequirePackage{amsthm}
 \newtheoremstyle{styletheorem}
-  {0pt}{0pt}{\normalfont}{0pt}{\small\bf\sffamily\color{orange}}{\;}{0.25em}
+  {0pt}{0pt}{\theoremfont}{0pt}{\small\bfseries\sffamily\color{orange}}{\;}{0.25em}
   {\small\sffamily\color{orange}\thmname{#1}\!\!
   \nobreakspace\thmnumber{\textup{#2}}
   \thmnote{\sffamily\bfseries\color{black} (#3)}}
 
 \newtheoremstyle{styleconjecture}
-  {0pt}{0pt}{\normalfont}{0pt}{\small\bf\sffamily\color{purple}}{\;}{0.25em}
+  {0pt}{0pt}{\theoremfont}{0pt}{\small\bfseries\sffamily\color{purple}}{\;}{0.25em}
   {\small\sffamily\color{purple}\thmname{#1}\!\!
   \nobreakspace\thmnumber{\textup{#2}}
   \thmnote{\sffamily\bfseries\color{purple} (#3)}}
 
 \newtheoremstyle{styledefinition}
-  {0pt}{0pt}{\normalfont}{0pt}{\small\bf\sffamily\color{black}}{\;}{0.25em}
+  {0pt}{0pt}{\theoremfont}{0pt}{\small\bfseries\sffamily\color{black}}{\;}{0.25em}
   {\small\sffamily\color{forestgreen}\thmname{#1}\!\!
   \nobreakspace\thmnumber{\textup{#2}}
   \thmnote{\sffamily\bfseries\color{black} (#3)}}
 
 \newtheoremstyle{styleexercise}
-  {0pt}{0pt}{\normalfont}{0pt}{\small\bf\sffamily\color{black}}{\;}{0.25em}
+  {0pt}{0pt}{\theoremfont}{0pt}{\small\bfseries\sffamily\color{black}}{\;}{0.25em}
   {\small\sffamily\color{black}\thmname{#1}\!\!
   \nobreakspace\thmnumber{\textup{#2}}
   \thmnote{\sffamily\bfseries\color{black} (#3)}}
+
+\newtheoremstyle{styleremark}
+  {0pt}{0pt}{\itshape}{0pt}{}{}{0pt}
+  {\thmnote{\sffamily\bfseries\color{black} (#3)}}
 
 \theoremstyle{styledefinition}
 \newtheorem{envdefinition}{\definitiontitle}[section]
@@ -448,117 +528,149 @@
 \newtheorem*{envexercise*}{\exercisetitle}
 \newtheorem{envproblem}{\problemtitle}[section]
 \newtheorem*{envproblem*}{\problemtitle}
+\newtheorem{envquestion}[envproblem]{\questiontitle}
+\newtheorem*{envquestion*}{\questiontitle}
 \newtheorem{envexample}{\exampletitle}[section]
 \newtheorem*{envexample*}{\exampletitle}
 
+\theoremstyle{styleremark}
+\newtheorem*{envremark}{}
+
 %% Environments for theorems
 %--------------------------------------------------------------------------
-\newenvironment{definition}
-               {\begin{boxdefinition}\begin{envdefinition}}
-               {\end{envdefinition}\end{boxdefinition}}
+\ifclassical
+  \theoremstyle{plain}
+  \newtheorem{theorem}{\theoremtitle}[section]
+  \newtheorem*{theorem*}{\theoremtitle}
+  \newtheorem{definition}[theorem]{\definitiontitle}
+  \newtheorem*{definition*}{\definitiontitle}
+  \newtheorem{corollary}[theorem]{\corollarytitle}
+  \newtheorem*{corollary*}{\corollarytitle}
+  \newtheorem{lemma}[theorem]{\lemmatitle}
+  \newtheorem*{lemma*}{\lemmatitle}
+  \newtheorem{proposition}[theorem]{\propositiontitle}
+  \newtheorem*{proposition*}{\propositiontitle}
+  \newtheorem{fact}[theorem]{\facttitle}
+  \newtheorem*{fact*}{\facttitle}
+  \newtheorem{conjecture}{\conjecturetitle}
+  \newtheorem*{conjecture*}{\conjecturetitle}
+  \newtheorem{exercise}{\exercisetitle}[section]
+  \newtheorem*{exercise*}{\exercisetitle}
+  \newtheorem{problem}{\problemtitle}
+  \newtheorem*{problem*}{\problemtitle}
+  \newtheorem{question}[problem]{\questiontitle}
+  \newtheorem*{question*}{\questiontitle}
+  \newtheorem{example}{\exampletitle}
+  \newtheorem*{example*}{\exampletitle}
+  \newtheorem{remark}{\remarktitle}
+  \newtheorem*{remark*}{\remarktitle}
 
-\newenvironment{definition*}
-               {\begin{boxdefinition}\begin{envdefinition*}}
-               {\end{envdefinition*}\end{boxdefinition}}
+\else
+  \newenvironment{definition}
+                {\begin{boxdefinition}\begin{envdefinition}}
+                {\end{envdefinition}\end{boxdefinition}}
 
-\newenvironment{theorem}
-               {\begin{boxtheorem}\begin{envtheorem}}
-               {\end{envtheorem}\end{boxtheorem}}
+  \newenvironment{definition*}
+                {\begin{boxdefinition}\begin{envdefinition*}}
+                {\end{envdefinition*}\end{boxdefinition}}
 
-\newenvironment{theorem*}
-               {\begin{boxtheorem}\begin{envtheorem*}}
-               {\end{envtheorem*}\end{boxtheorem}}
+  \newenvironment{theorem}
+                {\begin{boxtheorem}\begin{envtheorem}}
+                {\end{envtheorem}\end{boxtheorem}}
 
-\newenvironment{corollary}
-               {\begin{boxcorollary}\begin{envcorollary}}
-               {\end{envcorollary}\end{boxcorollary}}
+  \newenvironment{theorem*}
+                {\begin{boxtheorem}\begin{envtheorem*}}
+                {\end{envtheorem*}\end{boxtheorem}}
 
-\newenvironment{corollary*}
-               {\begin{boxcorollary}\begin{envcorollary*}}
-               {\end{envcorollary*}\end{boxcorollary}}
+  \newenvironment{corollary}
+                {\begin{boxcorollary}\begin{envcorollary}}
+                {\end{envcorollary}\end{boxcorollary}}
 
-\newenvironment{lemma}
-               {\begin{boxlemma}\begin{envlemma}}
-               {\end{envlemma}\end{boxlemma}}
+  \newenvironment{corollary*}
+                {\begin{boxcorollary}\begin{envcorollary*}}
+                {\end{envcorollary*}\end{boxcorollary}}
 
-\newenvironment{lemma*}
-               {\begin{boxlemma}\begin{envlemma*}}
-               {\end{envlemma*}\end{boxlemma}}
+  \newenvironment{lemma}
+                {\begin{boxlemma}\begin{envlemma}}
+                {\end{envlemma}\end{boxlemma}}
 
-\newenvironment{proposition}
-               {\begin{boxproposition}\begin{envproposition}}
-               {\end{envproposition}\end{boxproposition}}
+  \newenvironment{lemma*}
+                {\begin{boxlemma}\begin{envlemma*}}
+                {\end{envlemma*}\end{boxlemma}}
 
-\newenvironment{proposition*}
-               {\begin{boxproposition}\begin{envproposition*}}
-               {\end{envproposition*}\end{boxproposition}}
+  \newenvironment{proposition}
+                {\begin{boxproposition}\begin{envproposition}}
+                {\end{envproposition}\end{boxproposition}}
 
-\newenvironment{conjecture}
-               {\begin{boxconjecture}\mparfig[0.1]{\questionmark[0.33]{purple}}
-                \begin{envconjecture}}
-               {\end{envconjecture}\end{boxconjecture}}
+  \newenvironment{proposition*}
+                {\begin{boxproposition}\begin{envproposition*}}
+                {\end{envproposition*}\end{boxproposition}}
 
-\newenvironment{conjecture*}
-               {\begin{boxconjecture}\begin{envconjecture*}}
-               {\end{envconjecture*}\end{boxconjecture}}
+  \newenvironment{conjecture}
+                {\begin{boxconjecture}\mparfig[0.1]{\questionmark[\mparfigsize]{purple}} %This should be linked with font size.
+                  \begin{envconjecture}}
+                {\end{envconjecture}\end{boxconjecture}}
 
-\newenvironment{fact}
-               {\begin{boxfact}\begin{envfact}}
-               {\end{envfact}\end{boxfact}}
+  \newenvironment{conjecture*}
+                {\begin{boxconjecture}\begin{envconjecture*}}
+                {\end{envconjecture*}\end{boxconjecture}}
 
-\newenvironment{fact*}
-               {\begin{boxfact}\begin{envfact*}}
-               {\end{envfact*}\end{boxfact}}
+  \newenvironment{fact}
+                {\begin{boxfact}\begin{envfact}}
+                {\end{envfact}\end{boxfact}}
 
-\newenvironment{exercise}
-               {\begin{boxexercise}\begin{envexercise}}
-               {\end{envexercise}\end{boxexercise}}
+  \newenvironment{fact*}
+                {\begin{boxfact}\begin{envfact*}}
+                {\end{envfact*}\end{boxfact}}
 
-\newenvironment{exercise*}
-               {\begin{boxexercise}\begin{envexercise*}}
-               {\end{envexercise*}\end{boxexercise}}
+  \newenvironment{exercise}
+                {\begin{boxexercise}\begin{envexercise}}
+                {\end{envexercise}\end{boxexercise}}
 
-\newenvironment{problem}
-               {\begin{boxproblem}\begin{envproblem}}
-               {\end{envproblem}\end{boxproblem}}
+  \newenvironment{exercise*}
+                {\begin{boxexercise}\begin{envexercise*}}
+                {\end{envexercise*}\end{boxexercise}}
 
-\newenvironment{problem*}
-               {\begin{boxproblem}\begin{envproblem*}}
-               {\end{envproblem*}\end{boxproblem}}
+  \newenvironment{problem}
+                {\begin{boxproblem}\begin{envproblem}}
+                {\end{envproblem}\end{boxproblem}}
 
-\newenvironment{example}
-               {\begin{boxexample}\begin{envexample}}
-               {\end{envexample}\end{boxexample}}
+  \newenvironment{problem*}
+                {\begin{boxproblem}\begin{envproblem*}}
+                {\end{envproblem*}\end{boxproblem}}
 
-\newenvironment{example*}
-               {\begin{boxexample}\begin{envexample*}}
-               {\end{envexample*}\end{boxexample}}
+  \newenvironment{question}
+                {\begin{boxproblem}\begin{envquestion}}
+                {\end{envquestion}\end{boxproblem}}
 
-\newenvironment{remark}
-               {\par\noindent\itshape
-                \mparfig{\ideabulb[0.33]{orange}}\hspace{-2.4ex}}%link this with font size!
-               {\vspace{0.5\baselineskip}\par}
+  \newenvironment{question*}
+                {\begin{boxproblem}\begin{envquestion*}}
+                {\end{envquestion*}\end{boxproblem}}
 
-\newenvironment{remark*}
-               {\begin{remark}}
-               {\end{remark}}
+  \newenvironment{example}
+                {\begin{boxexample}\begin{envexample}}
+                {\end{envexample}\end{boxexample}}
 
-%% Section title format
-%--------------------------------------------------------------------------
-\titleformat{\section}{\ifcentertitle\center\fi\large\bfseries}{\thesection.}{.5em}{}
-\titleformat{\subsection}{\ifcentertitle\center\fi\normalsize\bfseries}{\thesubsection.}{.5em}{}
-\titleformat{\subsubsection}{\ifcentertitle\center\fi\normalsize\bfseries}{\thesubsubsection}{.5em}{}
+  \newenvironment{example*}
+                {\begin{boxexample}\begin{envexample*}}
+                {\end{envexample*}\end{boxexample}}
 
-%% Enumerate numbering format
-%--------------------------------------------------------------------------
-\setlist[enumerate,1]{label=(\arabic*),font=\textup,
-leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
-\setlist[enumerate,2]{label=(\alph*),font=\textup,leftmargin=7mm,labelsep=1.5mm,topsep=-0.8mm,itemsep=-0.8mm}
+  \newenvironment{remark}
+                {\vspace{0.3\baselineskip}\mparfig{\ideabulb[\mparfigsize]{orange}} %This should be linked with font size.
+                  \begin{envremark}}
+                {\end{envremark}\vspace{0.5\baselineskip}}
+
+  \newenvironment{remark*}
+                {\begin{remark}}
+                {\end{remark}}
+\fi
 
 %% Subtitle
 %--------------------------------------------------------------------------
+\newlength{\subtitleposfix}
+\setlength{\subtitleposfix}{-\ifclassical 2.25\else\ifcn 2\else 2\fi\fi\baselineskip}
 \newcommand\subtitle[1]{
-  \vspace{-1.75\baselineskip}\begin{flushright}\emph{\emph{------}#1}\end{flushright}\par}  %This should be linked with font size.
+  \vspace{\subtitleposfix}\begin{flushright}\emph{\emph{------}#1}\end{flushright}\par}
 
 %% Language
 %--------------------------------------------------------------------------
@@ -570,9 +682,11 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
 
 \newcommand{\emcolor}{}
 \newcommand{\colorem}[1]{\renewcommand{\emcolor}{#1}}
-\colorem{skyblue}
+\ifclassical\colorem{black}\else\colorem{skyblue}\fi
 
 \newcommand\enhandwriting{\fontfamily{frc}\selectfont \bfseries \tiny}
+\newcommand\theoremfont{\normalfont}
+\newcommand\settheoremfont[1]{\renewcommand\theoremfont{#1}}
 
 \ifcn
   \RequirePackage{indentfirst}
@@ -580,52 +694,21 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
   \renewcommand{\address}[1]{}
   \renewcommand{\email}[1]{}
 
-  \newcommand\mparliftupfactor{1.2} %This should be linked with font size.
+  \newcommand\mparliftupfactor{1.1}
   \newcommand\seplineshrink{0.3} %This should be linked with font size.
 
   \ifxetex
     \RequirePackage{ctex}
 
     \RequirePackage[T1]{fontenc}
-    \RequirePackage{frcursive}
 
     \ifwindows
-      \setCJKmainfont[ItalicFont={KaiTi}]{DengXian}
+      \setCJKmainfont[ItalicFont={STKaiti}]{DengXian}
+      \newCJKfontfamily\handwriting{FZShuTi}
     \else
       \setCJKmainfont[BoldFont={STHeiti},ItalicFont={STKaiti}]{STXihei}
+      \newCJKfontfamily\handwriting{HanziPenSC-W5}
     \fi
-
-    \newCJKfontfamily\handwriting{HanziPenSC-W5}
-
-    \makeatletter
-    \def\pgfsys@hboxsynced#1{% fix marginnote position
-    {%
-      \pgfsys@beginscope%
-      \setbox\pgf@hbox=\hbox{%
-        \hskip\pgf@pt@x%
-        \raise\pgf@pt@y\hbox{%
-          \pgf@pt@x=0pt%
-          \pgf@pt@y=0pt%
-          \special{pdf: content q}%
-          \pgflowlevelsynccm% 
-          \pgfsys@invoke{q -1 0 0 -1 0 0 cm}%
-          \special{pdf: content -1 0 0 -1 0 0 cm q}% translate to original coordinate system
-          \pgfsys@invoke{0 J [] 0 d}% reset line cap and dash
-          \wd#1=0pt%
-          \ht#1=0pt%
-          \dp#1=0pt%
-          \box#1%
-          \pgfsys@invoke{n Q Q Q}%
-        }%
-        \hss%
-      }%
-      \wd\pgf@hbox=0pt%
-      \ht\pgf@hbox=0pt%
-      \dp\pgf@hbox=0pt%
-      \pgfsys@hbox\pgf@hbox%
-      \pgfsys@endscope%
-    }}
-    \makeatother
 
     \def\theoremtitle{定理}
     \def\definitiontitle{定义}
@@ -639,8 +722,12 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
     \def\problemtitle{问题}
     \def\questiontitle{小问题}
     \def\exercisetitle{练习}
+    \def\remarktitle{备注}
     \renewcommand\refname{参考文献}
     \renewcommand\bibname{参考文献}
+    \renewcommand\indexname{索引}
+    \renewcommand\abstractname{摘要}
+    \renewcommand\contentsname{目录}
 
     \let\emph\relax
     \DeclareTextFontCommand{\emph}{\color{\emcolor}\em}
@@ -667,15 +754,16 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
       \def\problemtitle{问题}
       \def\questiontitle{小问题}
       \def\exercisetitle{练习}
+      \def\remarktitle{备注}
       \renewcommand\proofname{\textit{证明}}
       \renewcommand\refname{参考文献}
       \renewcommand\bibname{参考文献}
-      \renewcommand\indexname{索引} 
+      \renewcommand\indexname{索引}
       \renewcommand\abstractname{摘要}
-      \renewcommand\contentsname{目录} 
-      \renewcommand\listfigurename{插图目录} 
-      \renewcommand\listtablename{表格目录} 
-      \renewcommand\figurename{图} 
+      \renewcommand\contentsname{目录}
+      \renewcommand\listfigurename{插图目录}
+      \renewcommand\listtablename{表格目录}
+      \renewcommand\figurename{图}
       \renewcommand\tablename{表}
       \renewcommand\appendixname{附录}
       \renewcommand\today{\number\year 年\number\month 月\number\day 日}}
@@ -689,16 +777,17 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
     \fi
     \makeatother
 
-    \newcommand{\handwriting}{\color{gray}}
+    \newcommand{\handwriting}{\color{gray!66}}
     \renewcommand{\emph}[1]{{\color{\emcolor} \begin{CJK}{UTF8}{gkai}\em #1\end{CJK}}}
     \renewcommand{\textit}[1]{{\begin{CJK*}{UTF8}{gkai}\itshape #1\end{CJK*}}}
 
+    \ifclassical\else
     \renewenvironment{remark}
-      {\par\vspace{0.3\baselineskip}\noindent\begin{CJK*}{UTF8}{gkai}\itshape
-      \mparfig{\ideabulb[0.33]{orange}}\!\!\!\!}
-      {\end{CJK*}\vspace{0.5\baselineskip}\par} %This should be linked with font size.
+      {\vspace{0.3\baselineskip}\mparfig{\ideabulb[\mparfigsize]{orange}} %This should be linked with font size.
+       \begin{envremark}\begin{CJK*}{UTF8}{gkai}}
+      {\end{CJK*}\end{envremark}\vspace{0.5\baselineskip}}
+    \fi
 
-    \RequirePackage{silence}
     \WarningFilter{natbib}{Citation `}
 
     \newcommand{\dnf}{{\color{forestgreen}\fbox{\bfseries \begin{CJK*}{UTF8}{gbsn}这里的内容尚未完成\end{CJK*}}}}
@@ -709,9 +798,7 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
   {\textcolor{#1}{\rule[-0.6ex]{0.1pt}{3ex}}}\hspace{0.1ex}\ULon{#2}} %This should be linked with font size.
 
 \else
-  \RequirePackage{indentfirst}
-
-  \newcommand\handwriting{\fontfamily{frc}\selectfont \bfseries \small}
+  \newcommand\handwriting{\fontfamily{frc}\selectfont\small}
 
   \def\theoremtitle{Theorem}
   \def\definitiontitle{Definition}
@@ -725,13 +812,14 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
   \def\problemtitle{Problem}
   \def\questiontitle{Question}
   \def\exercisetitle{Exercise}
+  \def\remarktitle{Remark}
   \def\emailaddr{Email address: }
 
-  \newcommand\mparliftupfactor{1.4}  %This should be linked with font size.
+  \newcommand\mparliftupfactor{1.3} %This should be linked with font size.
   \newcommand\seplineshrink{0.1} %This should be linked with font size.
 
   \newcommand\highlight[1]{\bgroup\markoverwith
-  {\textcolor{#1}{\rule[-.5ex]{2pt}{2.5ex}}}\ULon}
+  {\textcolor{#1}{\rule[-.5ex]{2pt}{2.5ex}}}\ULon} %This should be linked with font size.
 
   \let\emph\relax
   \DeclareTextFontCommand{\emph}{\color{\emcolor}\em}
@@ -758,5 +846,5 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
 %% Badness adjust
 %--------------------------------------------------------------------------
 \hyphenpenalty=5000
-\hbadness=1500
+\hbadness=5000
 \tolerance=1500

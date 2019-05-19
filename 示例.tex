@@ -1,5 +1,5 @@
 %! TEX program = xelatex
-\documentclass[9pt,oneside,mpar,cn]{manuscript}
+\documentclass[9pt,oneside,mpar,cn,nclassical]{manuscript}
 
 \settheoremfont{\itshape}
 
@@ -17,9 +17,9 @@
         \verb|manuscript|支持英文、中文(\texttt{cn})，并且同时支持\pdfLaTeX 与\XeLaTeX.
     \end{abstract}
 
-    \begin{boxexercise}
-   	    \small\tableofcontents
-    \end{boxexercise}
+    \begin{tcolorbox}[enhanced jigsaw,colback=lightorange!20,frame hidden]
+        \small\tableofcontents
+    \end{tcolorbox}
 
     这篇记录主要参考的读物是\cite{manuscript}. 有关\LaTeX 的基本用法，请参阅\cite{latexguide}.
 
@@ -27,26 +27,26 @@
     \section{数学环境}\subtitle{定理、定义、注记、猜想、例子……}
 
         \begin{theorem}[定理名称] 
-            定理的内容.\marginnote{\small environment: \ttfamily theorem}
+            定理的内容.\marginnote{\normalfont\small environment: \ttfamily theorem}
         \end{theorem}
         \begin{definition}[定义对象]
-            具体的定义.\marginnote{\small environment: \ttfamily definition}
+            具体的定义.\marginnote{\normalfont\small environment: \ttfamily definition}
         \end{definition}
         \vspace{-0.25\baselineskip}
         \begin{remark}
-            一些说明文字.\normalfont\marginnote{\small environment: \ttfamily remark}
+            一些说明文字.\marginnote{\normalfont\small environment: \ttfamily remark}
         \end{remark}
         \vspace{-0.25\baselineskip}
         \begin{conjecture}[猜想描述]
-            具体的内容.\marginnote{\small environment: \ttfamily conjecture}
+            具体的内容.\marginnote{\normalfont\small environment: \ttfamily conjecture}
         \end{conjecture}
         \begin{example}
-            一个例子.\marginnote{\small environment: \ttfamily example}
+            一个例子.\marginnote{\normalfont\small environment: \ttfamily example}
         \end{example}
 
-    \vspace{-0.5\baselineskip}
+    \vspace{-\baselineskip}
     \section{页边注}\subtitle{书写想法的绝妙空白}
-
+    
         如果不想留太大的空白，可以在\verb|\documentclass[...]{manuscript}|中添加\verb|nompar|.
         \begin{itemize*}
             \item 带有数字标记的正式注释\mpar{像这样}；\hfill\verb|\mpar{...}|
@@ -54,7 +54,7 @@
             \item 普通的非正式注释\mparhand{像这样}.\hfill\verb|\mparhand{...}|
         \end{itemize*}
 
-    \vspace{-0.5\baselineskip}
+    \vspace{-\baselineskip}
     \section{模块}\subtitle{适当地分割模块可以让你的思路更加清晰}
 
         你可以用模块对内容进行分隔，每个模块都有一个序号标记在旁边. \marginnote{\small environment: \ttfamily module}
@@ -70,7 +70,7 @@
             \end{submodule}
         \end{module}
 
-    \vspace{-0.5\baselineskip}
+    \vspace{-\baselineskip}
     \section{文字样式}\subtitle{对文字进行一些标注有助于突出重点}
 
     你可以用指定的颜色进行荧光笔标注，例如\highlight{yellow!70}{黄色}\marginnote{\small \ttfamily \textbackslash highlight\{颜色\}\{内容\}}；你也可以标注公式：\highlight{yellow!70}{$e^{i\pi}+1=0$}.
