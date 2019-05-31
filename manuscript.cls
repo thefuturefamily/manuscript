@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{manuscript}[2019/05/19 v0.1.5i the Future Family]
+\ProvidesClass{manuscript}[2019/05/31 v0.1.6i the Future Family]
 
 \def\manuscript@baseclass{extarticle}
 
@@ -76,10 +76,11 @@
 
 %% Useful packages
 %--------------------------------------------------------------------------
-\RequirePackage{ifthen}
+\RequirePackage{xifthen}
+\RequirePackage{xparse}
 
 \RequirePackage{hyperref}
-\hypersetup{hidelinks,linktoc=all,backref,pagebackref,hyperindex,colorlinks=false,breaklinks,urlcolor=blue,bookmarks,bookmarksopen=false,unicode}
+\hypersetup{hidelinks,linktoc=all,colorlinks=false,breaklinks,urlcolor=blue,bookmarksopen=false,unicode}
 
 \RequirePackage{fancyhdr}
 \RequirePackage{titling}
@@ -105,8 +106,14 @@
 \RequirePackage[many]{tcolorbox}
 \RequirePackage{graphicx}
 \graphicspath{{images/}}
+\RequirePackage{import}
+\newcommand{\incfig}[2][\columnwidth]{%
+  \def\svgwidth{#1}
+  \import{./images/}{#2.pdf_tex}
+}
 \RequirePackage{float}
 \RequirePackage{tikz}
+\RequirePackage{pdfpages}
 
 \RequirePackage{booktabs}
 \RequirePackage{multirow}
@@ -152,7 +159,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 
-\renewcommand{\subsectionmark}[1]{\markright{\thesubsection~ #1}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection~ #1}}
 
 \makeatletter
 \if@twoside
@@ -302,7 +309,7 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
 \makeatletter
   \setlength{\fixfactor}{0.1\fsizeline-1.2\baselineskip}
 
-\newcommand\mparfig[2][0]{\par
+\newcommand\mparfig[2][0]{
   \if@twoside\else\reversemarginpar\fi
   \setlength{\tmp}{#1\baselineskip+\fixfactor}\mparadjust{\tmp}
   \marginnote{\!\!\!\!\!\!#2\!\!\!\!}\vspace{0pt} %This should be linked with font size.
@@ -656,8 +663,8 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
                 {\end{envexample*}\end{boxexample}}
 
   \newenvironment{remark}
-                {\vspace{0.3\baselineskip}\mparfig{\ideabulb[\mparfigsize]{orange}} %This should be linked with font size.
-                  \begin{envremark}}
+                {\vspace{0.3\baselineskip}\begin{envremark}\mparfig{\ideabulb[\mparfigsize]{orange}} %This should be linked with font size.
+                  }
                 {\end{envremark}\vspace{0.5\baselineskip}}
 
   \newenvironment{remark*}
@@ -668,9 +675,9 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
 %% Subtitle
 %--------------------------------------------------------------------------
 \newlength{\subtitleposfix}
-\setlength{\subtitleposfix}{-\ifclassical 2.25\else\ifcn 2\else 2\fi\fi\baselineskip}
-\newcommand\subtitle[1]{
-  \vspace{\subtitleposfix}\begin{flushright}\emph{\emph{------}#1}\end{flushright}\par}
+\setlength{\subtitleposfix}{-\ifclassical 2.25\else\ifcn 1.9\else 2\fi\fi\baselineskip} %This should be linked with font size.
+\newcommand\subtitle[1]{\colorem{steelblue}
+  \vspace{\subtitleposfix}\begin{flushright}\emph{\emph{------}#1}\end{flushright}\par\colorem{skyblue}}
 
 %% Language
 %--------------------------------------------------------------------------
@@ -732,7 +739,11 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
     \let\emph\relax
     \DeclareTextFontCommand{\emph}{\color{\emcolor}\em}
 
-    \newcommand{\dnf}{{\color{forestgreen}\fbox{\bfseries 这里的内容尚未完成}}}
+    \NewDocumentCommand{\dnf}{g}{{\color{forestgreen}\fbox{\bfseries 这里的内容尚未完成\IfNoValueF{#1}{ : #1}}}}
+    \NewDocumentCommand\graphneeded{g}{%
+      \begin{center}
+          \color{steelblue}\fbox{\bfseries 这里需要一张图片\IfNoValueF{#1}{ : #1}}
+      \end{center}}
 
   \else
     \RequirePackage{CJKutf8}
@@ -783,14 +794,18 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
 
     \ifclassical\else
     \renewenvironment{remark}
-      {\vspace{0.3\baselineskip}\mparfig{\ideabulb[\mparfigsize]{orange}} %This should be linked with font size.
-       \begin{envremark}\begin{CJK*}{UTF8}{gkai}}
+      {\vspace{0.3\baselineskip}\begin{envremark}\mparfig{\ideabulb[\mparfigsize]{orange}} %This should be linked with font size.
+       \begin{CJK*}{UTF8}{gkai}}
       {\end{CJK*}\end{envremark}\vspace{0.5\baselineskip}}
     \fi
 
     \WarningFilter{natbib}{Citation `}
 
-    \newcommand{\dnf}{{\color{forestgreen}\fbox{\bfseries \begin{CJK*}{UTF8}{gbsn}这里的内容尚未完成\end{CJK*}}}}
+    \NewDocumentCommand{\dnf}{g}{{\color{forestgreen}\fbox{\bfseries \begin{CJK*}{UTF8}{gbsn}这里的内容尚未完成\IfNoValueF{#1}{ : #1}\end{CJK*}}}}
+    \NewDocumentCommand\graphneeded{g}{%
+    \begin{center}
+        \color{steelblue}\fbox{\bfseries \begin{CJK*}{UTF8}{gbsn}这里需要一张图片\IfNoValueF{#1}{ : #1}\end{CJK*}}
+    \end{center}}
   \fi
 
   %highlight
@@ -824,7 +839,11 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
   \let\emph\relax
   \DeclareTextFontCommand{\emph}{\color{\emcolor}\em}
 
-  \newcommand{\dnf}{{\color{forestgreen}\fbox{\bfseries To be finished here}}}
+  \NewDocumentCommand{\dnf}{g}{{\color{forestgreen}\fbox{\bfseries To be finished here\IfNoValueF{#1}{ : #1}}}}
+  \NewDocumentCommand\graphneeded{g}{%
+  \begin{center}
+      \color{steelblue}\fbox{\bfseries A graph is needed here\IfNoValueF{#1}{ : #1}}
+  \end{center}}
 \fi
 
 %% Publish form
