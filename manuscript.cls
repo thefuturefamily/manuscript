@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{manuscript}[2019/05/31 v0.1.6i the Future Family]
+\ProvidesClass{manuscript}[2019/06/05 v0.1.7i the Future Family]
 
 \def\manuscript@baseclass{extarticle}
 
@@ -15,6 +15,10 @@
 \newif\ifcentertitle\centertitlefalse
 \newcommand\CenteringTheTitle{\centertitletrue}
 \DeclareOption{centertitle}{\centertitletrue}
+
+\newif\ifindentedtheorem\indentedtheoremfalse
+\newcommand\IndentedTheorem{\indentedtheoremtrue}
+\DeclareOption{indentedtheorem}{\indentedtheoremtrue}
 
 \newif\ifpublish\publishfalse
 \DeclareOption{publish}{\publishtrue}
@@ -33,7 +37,7 @@
 \if@usempar
   \geometry{top=1in,bottom=1in,outer=2in,inner=1in,marginparwidth=1.5in,marginparsep=0.2in}
 \else
-  \geometry{top=1in,bottom=1in,outer=1in,inner=1in,marginparwidth=0.7in,marginparsep=0.2in}
+  \geometry{top=1in,bottom=1in,outer=1in,inner=1in,marginparwidth=0.7in,marginparsep=0.15in}
 \fi
 
 % Fonts
@@ -55,6 +59,14 @@
 \definecolor{forestgreen}{RGB}{21,122,81}
 \definecolor{lightorange}{RGB}{255,185,88}
 
+%% Title setting
+%--------------------------------------------------------------------------
+\renewcommand*{\title}[2][]{\gdef\shorttitle{#1}\gdef\@title{\bfseries #2}}
+\renewcommand*{\author}[2][]{\gdef\shortauthor{#1}\gdef\@author{\small #2}}
+\renewcommand*{\date}[1]{\gdef\@date{\small #1}}
+\newcommand{\address}[1]{\@ifnotempty{#1}{\AtEndDocument{\par\textsc{#1}\par}}}
+\newcommand{\email}[1]{\@ifnotempty{#1}{\AtEndDocument{\par\textit{\emailaddr}\ttfamily #1\par}}}
+
 %% Lengths
 %--------------------------------------------------------------------------
 \RequirePackage{calc}
@@ -73,6 +85,10 @@
 \setlength{\charskip}{\widthof{i}}
 
 \FPeval{\mparfigsize}{0.033*\f@size+0.03}
+
+\makeatletter
+\newcommand*{\getlength}[1]{\strip@pt#1}
+\makeatother
 
 %% Useful packages
 %--------------------------------------------------------------------------
@@ -119,7 +135,6 @@
 \RequirePackage{multirow}
 
 \RequirePackage{changepage}
-\RequirePackage{perpage}
 \strictpagecheck
 
 \RequirePackage{bxtexlogo}
@@ -143,14 +158,6 @@
 \RequirePackage{mathrsfs}
 
 \newcommand*{\dif}{\mathop{}\!\mathrm{d}}
-
-%% Title setting
-%--------------------------------------------------------------------------
-\renewcommand*{\title}[2][]{\gdef\shorttitle{#1}\gdef\@title{\bfseries #2}}
-\renewcommand*{\author}[2][]{\gdef\shortauthor{#1}\gdef\@author{\small #2}}
-\renewcommand*{\date}[1]{\gdef\@date{\small #1}}
-\newcommand{\address}[1]{\@ifnotempty{#1}{\AtEndDocument{\par\textsc{#1}\par}}}
-\newcommand{\email}[1]{\@ifnotempty{#1}{\AtEndDocument{\par\textit{\emailaddr}\ttfamily #1\par}}}
 
 %% Page setting
 %--------------------------------------------------------------------------
@@ -425,31 +432,29 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
   {\end{tcolorbox}}
 
 \ifdefined\pdfsavepos
-  \RequirePackage{zref-savepos}
+  \RequirePackage[user,savepos]{zref}
 
   \newlength{\deftop}
   \newlength{\defbot}
   \newlength{\defsep}
-  \newlength{\defpage}
-  \newlength{\currentpage}
   \newcounter{def}
 
   \newenvironment{boxdefinition}
-    {\stepcounter{def}
-    \zsavepos{def\arabic{def}1}
-    \setlength{\global\deftop}{\dimexpr\paperheight - \zposy{def\arabic{def}1} sp}
-    \setlength{\global\defsep}{\deftop-\defbot}
-    \setlength{\global\currentpage}{\thepage pt}
-    \ifthenelse{\lengthtest{\defpage = \currentpage}}
-      {\ifthenelse{\lengthtest{\defsep < 3mm}}{\vspace{-3mm}}{}}{}\par
-    \begin{tcolorbox}
-    [enhanced jigsaw,pad at break*=1mm,breakable,
-    colback=lightorange!10!white,boxrule=0pt,frame hidden,
-    borderline west={1.5mm}{-1mm}{forestgreen}]}
-    {\end{tcolorbox}
-    \zsavepos{def\arabic{def}2}
-    \setlength{\global\defbot}{\dimexpr\paperheight - \zposy{def\arabic{def}2} sp}
-    \setlength{\global\defpage}{\thepage pt}}
+  {\vspace{-1mm}\begin{tcolorbox}[blank,breakable]
+  \stepcounter{def}
+  \zsavepos{def\arabic{def}1}
+  \setlength{\global\deftop}{\dimexpr\paperheight - \zposy{def\arabic{def}1} sp}
+  \setlength{\global\defsep}{\deftop-\defbot}
+  \ifthenelse{\lengthtest{\defsep > -0.1mm}}
+    {\ifthenelse{\lengthtest{\defsep < 5mm}}{\vspace{-4mm}}{}}{}\par % This should be a dynamical quantity, adjusting according to the page's situation
+  \begin{tcolorbox}
+  [enhanced jigsaw,pad at break*=1mm,breakable,
+  colback=lightorange!10!white,boxrule=0pt,frame hidden,
+  borderline west={1.5mm}{-1mm}{forestgreen}]}
+  {\end{tcolorbox}
+  \zsavepos{def\arabic{def}2}
+  \setlength{\global\defbot}{\dimexpr\paperheight - \zposy{def\arabic{def}2} sp}
+  \end{tcolorbox}\vspace{-1mm}}
 \else
   \newenvironment{boxdefinition}
   {\vspace{-1mm}
@@ -546,7 +551,12 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
 %% Environments for theorems
 %--------------------------------------------------------------------------
 \ifclassical
-  \theoremstyle{plain}
+  \newtheoremstyle{styleplain}
+    {0pt}{0pt}{\theoremfont}{\ifindentedtheorem 2em\else 0pt \fi}{\bfseries}{\;}{0.25em}
+    {\thmname{#1}\!\!
+    \nobreakspace\thmnumber{\textup{#2}}
+    \thmnote{\normalfont (#3)}}
+  \theoremstyle{styleplain}
   \newtheorem{theorem}{\theoremtitle}[section]
   \newtheorem*{theorem*}{\theoremtitle}
   \newtheorem{definition}[theorem]{\definitiontitle}
@@ -662,10 +672,12 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
                 {\begin{boxexample}\begin{envexample*}}
                 {\end{envexample*}\end{boxexample}}
 
+  \makeatletter
   \newenvironment{remark}
-                {\vspace{0.3\baselineskip}\begin{envremark}\mparfig{\ideabulb[\mparfigsize]{orange}} %This should be linked with font size.
-                  }
+                {\vspace{0.3\baselineskip}\marginnote{\mparfig{\ideabulb[\mparfigsize]{orange}}} %This should be linked with font size.
+                \begin{envremark}\vspace{-\baselineskip}}
                 {\end{envremark}\vspace{0.5\baselineskip}}
+  \makeatother
 
   \newenvironment{remark*}
                 {\begin{remark}}
@@ -794,8 +806,8 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
 
     \ifclassical\else
     \renewenvironment{remark}
-      {\vspace{0.3\baselineskip}\begin{envremark}\mparfig{\ideabulb[\mparfigsize]{orange}} %This should be linked with font size.
-       \begin{CJK*}{UTF8}{gkai}}
+      {\vspace{0.3\baselineskip}\marginnote{\mparfig{\ideabulb[\mparfigsize]{orange}}} %This should be linked with font size.
+      \begin{envremark}\vspace{-\baselineskip}\begin{CJK*}{UTF8}{gkai}}
       {\end{CJK*}\end{envremark}\vspace{0.5\baselineskip}}
     \fi
 
