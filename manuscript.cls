@@ -1,13 +1,13 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{manuscript}[2019/06/05 v0.1.7i the Future Family]
+\ProvidesClass{manuscript}[2019/07/10 v0.1.8i the Future Family]
 
 \def\manuscript@baseclass{extarticle}
 
 \newif\if@usempar\@usemparfalse
 \DeclareOption{mpar}{\@usempartrue}
 
-\newif\ifclassical\classicalfalse
-\DeclareOption{classical}{\classicaltrue}
+\newif\ifplain\plainfalse
+\DeclareOption{plain}{\plaintrue}
 
 \newif\ifcn\cnfalse
 \DeclareOption{cn}{\cntrue}
@@ -58,12 +58,13 @@
 \definecolor{steelblue}{RGB}{70,130,180}
 \definecolor{forestgreen}{RGB}{21,122,81}
 \definecolor{lightorange}{RGB}{255,185,88}
+\definecolor{lightskyblue}{RGB}{35,198,255}
 
 %% Title setting
 %--------------------------------------------------------------------------
 \renewcommand*{\title}[2][]{\gdef\shorttitle{#1}\gdef\@title{\bfseries #2}}
-\renewcommand*{\author}[2][]{\gdef\shortauthor{#1}\gdef\@author{\small #2}}
-\renewcommand*{\date}[1]{\gdef\@date{\small #1}}
+\renewcommand*{\author}[2][]{\gdef\shortauthor{#1}\gdef\@author{#2}}
+\renewcommand*{\date}[1]{\gdef\@date{\small #1\ifthenelse{\equal{#1}{}}{\vspace{-2\baselineskip}}{}}}
 \newcommand{\address}[1]{\@ifnotempty{#1}{\AtEndDocument{\par\textsc{#1}\par}}}
 \newcommand{\email}[1]{\@ifnotempty{#1}{\AtEndDocument{\par\textit{\emailaddr}\ttfamily #1\par}}}
 
@@ -90,6 +91,10 @@
 \newcommand*{\getlength}[1]{\strip@pt#1}
 \makeatother
 
+\newlength{\textlength}
+\newcommand{\skiplengthof}[1]{\setlength{\textlength}{\widthof{#1}}\hspace{\textlength}}
+\newcommand{\backlengthof}[1]{\setlength{\textlength}{\widthof{#1}}\hspace{-\textlength}}
+
 %% Useful packages
 %--------------------------------------------------------------------------
 \RequirePackage{xifthen}
@@ -102,6 +107,7 @@
 \RequirePackage{titling}
 \RequirePackage{titlesec}
 \RequirePackage{titletoc}
+\RequirePackage{tocloft}
 
 \RequirePackage{mdwlist}
 \RequirePackage{enumitem}
@@ -156,8 +162,17 @@
 \restoresymbol{ES}{iiint}
 \restoresymbol{ES}{iiiint}
 \RequirePackage{mathrsfs}
+\RequirePackage{arydshln}
 
 \newcommand*{\dif}{\mathop{}\!\mathrm{d}}
+
+\def\upint{\mathchoice%
+    {\mkern13mu\overline{\vphantom{\intop}\mkern7mu}\mkern-20mu}%
+    {\mkern7mu\overline{\vphantom{\intop}\mkern7mu}\mkern-14mu}%
+    {\mkern7mu\overline{\vphantom{\intop}\mkern7mu}\mkern-14mu}%
+    {\mkern7mu\overline{\vphantom{\intop}\mkern7mu}\mkern-14mu}%
+  \int}
+\def\lowint{\mkern3mu\underline{\vphantom{\intop}\mkern7mu}\mkern-10mu\int}
 
 %% Page setting
 %--------------------------------------------------------------------------
@@ -194,7 +209,7 @@
 
 %% Section title format
 %--------------------------------------------------------------------------
-\ifclassical
+\ifplain
   \titleformat{\section}{\ifcentertitle\center\fi\large\bfseries}{\thesection.}{.5em}{}
 \else
   \titleformat{\section}{\ifcentertitle\center\fi\ifcn\large\bfseries\else\Large\sffamily\fi\color{steelblue}}{\thesection}{1em}{}[{\titlerule[\titleruleheight]}]
@@ -550,12 +565,12 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
 
 %% Environments for theorems
 %--------------------------------------------------------------------------
-\ifclassical
+\ifplain
   \newtheoremstyle{styleplain}
     {0pt}{0pt}{\theoremfont}{\ifindentedtheorem 2em\else 0pt \fi}{\bfseries}{\;}{0.25em}
     {\thmname{#1}\!\!
     \nobreakspace\thmnumber{\textup{#2}}
-    \thmnote{\normalfont (#3)}}
+    \thmnote{\normalfont (#3)}.}
   \theoremstyle{styleplain}
   \newtheorem{theorem}{\theoremtitle}[section]
   \newtheorem*{theorem*}{\theoremtitle}
@@ -687,10 +702,17 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
 %% Subtitle
 %--------------------------------------------------------------------------
 \newlength{\subtitleposfix}
-\setlength{\subtitleposfix}{-\ifclassical 2.25\else\ifcn 1.9\else 2\fi\fi\baselineskip} %This should be linked with font size.
+\setlength{\subtitleposfix}{-\ifplain 2.25\else\ifcn 1.9\else 2\fi\fi\baselineskip} %This should be linked with font size.
 \newcommand\subtitle[1]{\colorem{steelblue}
   \vspace{\subtitleposfix}\begin{flushright}\emph{\emph{------}#1}\end{flushright}\par\colorem{skyblue}}
 
+\newtcbox{\hl}[1][red]
+{on line, arc = 0pt, outer arc = 0pt,breakable,
+  colback = #1!20!white, colframe = #1!20!white,
+  boxsep = 0pt, left = 1pt, right = 1pt, top = 2pt, bottom = 2pt,
+  boxrule = 0pt, bottomrule = 0pt, toprule = 0pt}
+  
+    
 %% Language
 %--------------------------------------------------------------------------
 \RequirePackage{ifxetex}
@@ -701,7 +723,7 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
 
 \newcommand{\emcolor}{}
 \newcommand{\colorem}[1]{\renewcommand{\emcolor}{#1}}
-\ifclassical\colorem{black}\else\colorem{skyblue}\fi
+\ifplain\colorem{black}\else\colorem{skyblue}\fi
 
 \newcommand\enhandwriting{\fontfamily{frc}\selectfont \bfseries \tiny}
 \newcommand\theoremfont{\normalfont}
@@ -804,7 +826,7 @@ leftmargin=7mm,labelsep=1.5mm,topsep=0mm,itemsep=-0.8mm}
     \renewcommand{\emph}[1]{{\color{\emcolor} \begin{CJK}{UTF8}{gkai}\em #1\end{CJK}}}
     \renewcommand{\textit}[1]{{\begin{CJK*}{UTF8}{gkai}\itshape #1\end{CJK*}}}
 
-    \ifclassical\else
+    \ifplain\else
     \renewenvironment{remark}
       {\vspace{0.3\baselineskip}\marginnote{\mparfig{\ideabulb[\mparfigsize]{orange}}} %This should be linked with font size.
       \begin{envremark}\vspace{-\baselineskip}\begin{CJK*}{UTF8}{gkai}}
